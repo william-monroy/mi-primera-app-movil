@@ -4,14 +4,16 @@ import firebase from '../database/firebase'
 
 export const UserDetailScreen = (props) => {
 
-    const [user, setUser] = useState({
+    const initialState={
         id: '',
         name: '',
         email: '',
         phone: ''
-    })
+    } 
 
-    const [loading, setLoding] = useState(true)
+    const [user, setUser] = useState(initialState);
+
+    const [loading, setLoding] = useState(true);
 
     const getUserbyId = async(id) =>{
         const dbRef = firebase.db.collection('users').doc(id)
@@ -39,8 +41,17 @@ export const UserDetailScreen = (props) => {
     }
 
     const updateUser = async () => {
-        
+        const dbRef = firebase.db.collection('users').doc(user.id );
+        await dbRef.set({
+            name: user.name,
+            email: user.email,
+            phone: user.phone
+        })
+        setUser(initialState)
+        props.navigation.navigate('UsersList')
     }
+    
+    
 
     const openConfirmationAlert = () =>{
         Alert.alert('Eliminar Usuario', '¿Estas seguro de que deseas eliminar el usuario?', [
@@ -75,7 +86,7 @@ export const UserDetailScreen = (props) => {
                 onChangeText={(value)=> handleChangeText('phone',value)} />
             </View>
             <View>
-                <Button style={styles.button} color='#19AC52' title="Update User" onPress = {() => alert('works')}/>
+                <Button style={styles.button} color='#19AC52' title="Update User" onPress = {() => updateUser()}/>
             </View>
             <View>
                 <Button style={styles.button} color='#AC2A2A' title="Delete User" onPress = {() => openConfirmationAlert()}/>
